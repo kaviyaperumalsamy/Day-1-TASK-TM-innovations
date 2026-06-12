@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator
+import os
+from pydantic import BaseModel, field_validator, computed_field
 from typing import Optional
 
 class BookCreate(BaseModel):
@@ -35,6 +36,22 @@ class BookOut(BaseModel):
     isbn: Optional[str] = None
     quantity: int
     available: int
+    image_path: Optional[str] = None
+    pdf_path: Optional[str] = None
 
     class Config:
         from_attributes = True
+
+    @computed_field
+    @property
+    def image_url(self) -> Optional[str]:
+        if self.image_path:
+            return f"/images/{os.path.basename(self.image_path)}"
+        return None
+
+    @computed_field
+    @property
+    def pdf_url(self) -> Optional[str]:
+        if self.pdf_path:
+            return f"/pdfs/{os.path.basename(self.pdf_path)}"
+        return None

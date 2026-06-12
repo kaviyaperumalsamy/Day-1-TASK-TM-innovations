@@ -57,6 +57,32 @@ def update_book(db: Session, book_id: int, book_data: schemas.BookUpdate):
     db.refresh(db_book)
     return db_book
 
+def patch_book(db: Session, book_id: int, book_data: schemas.BookUpdate):
+    db_book = get_book_by_id(db, book_id)
+    if not db_book:
+        return None
+    db.commit()
+    db.refresh(db_book)
+    return update_book(db, book_id, book_data)
+
+def save_image_path(db: Session, book_id: int, image_path: str):
+    db_book = get_book_by_id(db, book_id)
+    if not db_book:
+        return None
+    db_book.image_path = image_path
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
+def save_pdf_path(db: Session, book_id: int, pdf_path: str):
+    db_book = get_book_by_id(db, book_id)
+    if not db_book:
+        return None
+    db_book.pdf_path = pdf_path
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
 def delete_book(db: Session, book_id: int):
     db_book = get_book_by_id(db, book_id)
     if not db_book:
@@ -64,9 +90,6 @@ def delete_book(db: Session, book_id: int):
     db.delete(db_book)
     db.commit()
     return db_book
-
-def patch_book(db: Session, book_id: int, book_data: schemas.BookUpdate):
-    return update_book(db, book_id, book_data)
 
 def filter_books(db: Session, category: str = None, author: str = None, year: int = None, available: int = None):
     query = db.query(models.Book)
